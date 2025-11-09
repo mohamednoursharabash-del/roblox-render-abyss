@@ -9,7 +9,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-const PASSWORD = "your-key-666"; // CHANGE THIS
+const PASSWORD = "nigger"; // CHANGE THIS
 let logs = [];
 
 const dataFile = path.join(__dirname, 'vault.json');
