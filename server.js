@@ -7,9 +7,9 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public'))); // FIX: FULL PATH
 
-const PASSWORD = "nigger"; // CHANGE THIS
+const PASSWORD = "NIGGER"; // CHANGE THIS
 let logs = [];
 
 const dataFile = path.join(__dirname, 'vault.json');
@@ -41,7 +41,7 @@ app.get('/gate', (req, res) => {
 
 app.post('/unlock', (req, res) => {
   if (req.body.pass === PASSWORD) {
-    res.sendFile(path.join(__dirname, 'public/throne.html'));
+    res.sendFile(path.join(__dirname, 'public/throne.html')); // FIX: FULL PATH
   } else {
     res.redirect('/gate?fail=1');
   }
@@ -64,10 +64,10 @@ app.get('/', (req, res) => {
   res.redirect('/gate');
 });
 
-// FIX 404 ON /unlock
+// CATCH ALL 404s
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'public/gate.html'));
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Throne on ${port}`));
+app.listen(port, () => console.log(`THRONE LIVE ON ${port}`));
