@@ -1,20 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>🔒 ENTER KEY</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔒 EMPIRE GATE</title>
   <style>
-    body { background: #000; color: #0f0; font-family: monospace; text-align: center; padding: 100px; }
-    input, button { padding: 15px; margin: 10px; font-size: 18px; width: 300px; }
-    button { background: #0f0; color: #000; border: none; cursor: pointer; }
-    h1 { text-shadow: 0 0 10px #0f0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      background: linear-gradient(135deg, #000, #1a1a2e, #16213e); 
+      color: #00ff41; font-family: 'Courier New', monospace; 
+      display: flex; justify-content: center; align-items: center; min-height: 100vh; 
+    }
+    .gate { 
+      background: rgba(0,0,0,0.8); padding: 40px; border: 2px solid #00ff41; 
+      border-radius: 10px; text-align: center; box-shadow: 0 0 20px #00ff41; width: 400px; 
+    }
+    h1 { font-size: 2em; margin-bottom: 20px; text-shadow: 0 0 10px #00ff41; }
+    input { 
+      width: 100%; padding: 15px; margin: 10px 0; background: #111; 
+      border: 1px solid #00ff41; color: #00ff41; font-family: inherit; font-size: 16px; 
+      box-sizing: border-box;
+    }
+    button { 
+      width: 100%; padding: 15px; background: #00ff41; color: #000; 
+      border: none; font-size: 18px; font-weight: bold; cursor: pointer; 
+      transition: all 0.3s; border-radius: 5px;
+    }
+    button:hover { box-shadow: 0 0 15px #00ff41; transform: scale(1.05); }
+    .fail { color: #ff0000; margin-top: 10px; text-shadow: 0 0 5px #ff0000; }
+    p { margin-bottom: 20px; opacity: 0.8; }
   </style>
 </head>
 <body>
-  <h1>ENTER KEY</h1>
-  <form action="/unlock" method="POST">
-    <input type="password" name="pass" placeholder="Password" required autofocus>
-    <button>UNLOCK</button>
-  </form>
-  <?php if (isset($_GET['fail'])): ?><p style="color:red">WRONG</p><?php endif; ?>
+  <div class="gate">
+    <h1>🔒 ENTER THE EMPIRE</h1>
+    <p>Key to the stolen realm...</p>
+    <form action="/unlock" method="POST">
+      <input type="password" name="pass" placeholder="Your Dark Key" required autofocus>
+      <button type="submit">UNLOCK THRONE</button>
+    </form>
+    <% if (typeof fail !== 'undefined' && fail) { %>
+      <p class="fail">Wrong key, intruder. Begone.</p>
+    <% } %>
+  </div>
 </body>
 </html>
